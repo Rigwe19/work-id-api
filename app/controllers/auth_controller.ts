@@ -1,17 +1,10 @@
-import logger from '@adonisjs/core/services/logger'
 import User from '#models/user'
+import { emailValidator, loginValidator, registerValidator } from '#validators/auth'
 import { HttpContext } from '@adonisjs/core/http'
-import Case from 'case'
-import {
-  bvnValidator,
-  emailValidator,
-  loginValidator,
-  registerValidator,
-  verifyValidator,
-} from '#validators/auth'
-import mail from '@adonisjs/mail/services/main'
+import logger from '@adonisjs/core/services/logger'
 import limiter from '@adonisjs/limiter/services/main'
-import { StatusCodes } from 'http-status-codes'
+import mail from '@adonisjs/mail/services/main'
+import Case from 'case'
 
 export default class AuthController {
   async register({ request }: HttpContext) {

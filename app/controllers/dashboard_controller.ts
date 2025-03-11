@@ -2,7 +2,7 @@ import Work from '#models/work'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class DashboardController {
-  async settings({ auth, request, response }: HttpContext) {
+  async settings({ auth, response }: HttpContext) {
     await auth.check()
     const user = auth.user
     if (!user) {
