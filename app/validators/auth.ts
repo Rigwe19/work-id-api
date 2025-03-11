@@ -14,6 +14,7 @@ export const registerValidator = vine.compile(
         return !match?.id
       }),
     full_name: vine.string(),
+    location: vine.string(),
     phone: vine
       .string()
       .minLength(11)

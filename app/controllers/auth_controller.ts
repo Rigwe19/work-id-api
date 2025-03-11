@@ -22,6 +22,7 @@ export default class AuthController {
       phone: data.phone,
       password: data.password,
       username: data.username,
+      location: data.location,
     })
 
     // await mail.send((message) => {
