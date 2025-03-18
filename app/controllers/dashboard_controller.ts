@@ -118,7 +118,7 @@ export default class DashboardController {
     // return response.json(employers)
   }
 
-  public async user({ auth, params, request, response }: HttpContext) {
+  public async user({ auth, params, response }: HttpContext) {
     logger.info('this is user route')
     await auth.check()
     const user = auth.user
