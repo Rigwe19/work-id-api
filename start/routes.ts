@@ -18,17 +18,28 @@ router.get('/', async () => {
   }
 })
 
-router.post('/auth/register', [AuthController, 'register']).as('auth.register')
-router.post('/auth/login', [AuthController, 'login']).as('auth.login')
 router
-  .get('/auth/user', [AuthController, 'user'])
-  .as('auth.user')
-  .use(middleware.auth({ guards: ['api'] }))
-// router
-//   .post('/auth/resend-verification-code', [AuthController, 'resendVerificationCode'])
-//   .as('auth.resend-code')
-// router
-// .post('/auth/confirm-verification', [AuthController, 'confirmVerification'])
-// .as('auth.confirm-code')
+  .group(() => {
+    router.post('/register', [AuthController, 'register'])
+    router.post('/login', [AuthController, 'login'])
+    router.delete('/logout', [AuthController, 'logout'])
+    router.get('/user', [AuthController, 'user']).use(middleware.auth({ guards: ['api'] }))
+    // router
+    //   .post('/auth/resend-verification-code', [AuthController, 'resendVerificationCode'])
+    //   .as('auth.resend-code')
+    // router
+    // .post('/auth/confirm-verification', [AuthController, 'confirmVerification'])
+    // .as('auth.confirm-code')
+  })
+  .prefix('/auth')
 
-router.get('/dashboard/settings', [DashboardController, 'settings']).as('dashboard.settings')
+router
+  .group(() => {
+    router.get('/settings', [DashboardController, 'settings'])
+    router.post('/settings', [DashboardController, 'saveWorks'])
+    router.post('/profile', [DashboardController, 'saveProfile'])
+    router.get('/search', [DashboardController, 'search'])
+    router.get('/user/:workId', [DashboardController, 'user'])
+  })
+  .use(middleware.auth({ guards: ['api'] }))
+  .prefix('/dashboard')

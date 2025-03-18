@@ -12,7 +12,7 @@ export default class AuthController {
 
     const data = await request.validateUsing(registerValidator)
     const verificationCode = Math.floor(1000 + Math.random() * 9000)
-    const workId = `WDI-${Math.floor(10000000 + Math.random() * 90000000)}`
+    const workId = await this.generateWorkId(data.role)
     const user = await User.create({
       verificationCode,
       workId,
@@ -32,7 +32,7 @@ export default class AuthController {
     //       `)
     // })
     const token = await User.accessTokens.create(user, ['*'], {
-      expiresIn: '14 days',
+      expiresIn: '30 days',
     })
     return {
       success: true,
@@ -48,7 +48,17 @@ export default class AuthController {
     }
   }
 
-  async login({ request }: HttpContext) {
+  private async generateWorkId(type: 'employee' | 'employer' | 'admin'): Promise<string> {
+    const workId = `${type === 'employee' ? 'WDI' : 'EMP'}-${Math.floor(10000000 + Math.random() * 90000000)}`
+    const isExists = await User.query().where('work_id', workId).first()
+    if (isExists) {
+      return this.generateWorkId(type)
+    }
+
+    return workId
+  }
+
+  async login({ request, response }: HttpContext) {
     logger.info('this is login route')
 
     const { username, password } = await request.validateUsing(loginValidator)
@@ -68,14 +78,23 @@ export default class AuthController {
      * IP address
      */
     const key = `login_${request.ip()}_${username}`
-    const userDetails = await User.findBy('username', username)
+    const userDetails = await User.query()
+      .where('username', username)
+      .orWhere('email', username)
+      .first()
+    if (!userDetails) {
+      return response.safeStatus(419).json({ message: 'User not found' })
+    }
     /**
      * Wrap User.VerifyCredentials inside the penalize method, so
      * that we consume one request for every invalid credentials
      * error
      */
-    const [error, user] = await loginLimiter.penalize(key, () => {
-      return User.verifyCredentials(userDetails?.email ?? username, password)
+    const [error, user] = await loginLimiter.penalize(key, async () => {
+      console.log(userDetails?.email ?? username, password)
+      return await User.verifyCredentials(userDetails?.email ?? username, password).catch(() => {
+        return response.safeStatus(419).json({ message: 'Invalid credentials' })
+      })
     })
     /**
      * On ThrottleException, redirect the user back with an error
@@ -105,7 +124,7 @@ export default class AuthController {
       //   }
       // }
       const token = await User.accessTokens.create(user, ['*'], {
-        expiresIn: '7 days',
+        expiresIn: '30 days',
       })
 
       return {
@@ -120,7 +139,6 @@ export default class AuthController {
     logger.info('this is user route')
     await auth.check()
     const user = await auth.user
-    console.log(auth.user)
     return {
       success: true,
       user,

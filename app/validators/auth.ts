@@ -10,22 +10,22 @@ export const registerValidator = vine.compile(
       .normalizeEmail()
       .unique(async (db, value) => {
         const match = await db.from('users').select('id').where('email', value).first()
-        console.log(!match?.id)
+        // console.log(!match?.id)
         return !match?.id
       }),
     full_name: vine.string(),
     location: vine.string(),
     phone: vine
       .string()
-      .minLength(11)
+      .fixedLength(11)
       .unique(async (db, value) => {
         const match = await db.from('users').select('id').where('phone', value).first()
-        console.log(!match?.id)
+        // console.log(!match?.id)
         return !match?.id
       }),
     username: vine.string().unique(async (db, value) => {
       const match = await db.from('users').select('id').where('username', value).first()
-      console.log(!match?.id)
+      // console.log(!match?.id)
       return !match?.id
     }),
     role: vine.enum(['employee', 'employer', 'admin']),

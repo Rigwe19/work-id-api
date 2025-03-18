@@ -14,10 +14,13 @@ export default class Work extends BaseModel {
   declare position: string
 
   @column()
+  declare company: string
+
+  @column()
   declare start: string
 
   @column()
-  declare end: number
+  declare end: string
 
   @column()
   declare location: string

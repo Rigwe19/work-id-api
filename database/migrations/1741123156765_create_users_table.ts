@@ -12,6 +12,8 @@ export default class extends BaseSchema {
       table.string('password').notNullable()
       table.string('phone', 20).notNullable()
       table.string('work_id', 30).nullable()
+      table.string('location', 100).nullable()
+      table.string('linked_in', 100).nullable()
       table.string('username', 200).notNullable().unique()
       // table.integer('balance').defaultTo(0)
       // table.string('pin', 4).nullable()
