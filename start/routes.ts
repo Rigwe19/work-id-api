@@ -11,6 +11,7 @@ const AuthController = () => import('#controllers/auth_controller')
 const DashboardController = () => import('#controllers/dashboard_controller')
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+const VerifiesController = () => import('#controllers/verifies_controller')
 
 router.get('/', async () => {
   return {
@@ -43,3 +44,5 @@ router
   })
   .use(middleware.auth({ guards: ['api'] }))
   .prefix('/dashboard')
+
+router.post('/verification/id', [VerifiesController, 'workId'])
